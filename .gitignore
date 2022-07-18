@@ -31,3 +31,4 @@ venv/
 
 .idea
 test
+**/models
