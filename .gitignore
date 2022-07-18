@@ -30,3 +30,4 @@ pip-log.txt
 venv/
 
 .idea
+test
