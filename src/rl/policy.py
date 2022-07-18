@@ -53,16 +53,16 @@ class Match3MlpExtractor(nn.Module):
         return x_act, x_val
 
     def forward_actor(self, features: th.Tensor) -> th.Tensor:
-        x_act = F.relu(self.act_conv1(features))
+        x_act = th.relu(self.act_conv1(features))
         x_act = x_act.view(-1, self.board_width * self.board_height)
-        x_act = F.log_softmax(self.act_fc1(x_act))
+        x_act = F.log_softmax(self.act_fc1(x_act), dim=0)
         return x_act
 
     def forward_critic(self, features: th.Tensor) -> th.Tensor:
-        x_val = F.relu(self.val_conv1(features))
+        x_val = th.relu(self.val_conv1(features))
         x_val = x_val.view(-1, 2 * self.board_width * self.board_height)
-        x_val = F.relu(self.val_fc1(x_val))
-        x_val = F.tanh(self.val_fc2(x_val))
+        x_val = th.relu(self.val_fc1(x_val))
+        x_val = th.tanh(self.val_fc2(x_val))
         return x_val
 
 
