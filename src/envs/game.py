@@ -614,6 +614,10 @@ class Game(AbstractGame):
         matches = self.__mtch_searcher.scan_board_for_matches(tmp_board)
         return matches
 
+    def check_matches(self, point1: Point, point2: Point):
+        direction = point2 - point1
+        return self.__check_matches(point1, direction)
+
     def __get_copy_of_board(self):
         return copy.deepcopy(self.board)
 

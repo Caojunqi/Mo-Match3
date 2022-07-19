@@ -9,6 +9,7 @@ from src.envs.renderer import Renderer
 
 from itertools import product
 import warnings
+import numpy as np
 
 BOARD_NDIM = 2
 
@@ -122,3 +123,14 @@ class Match3Env(gym.Env):
         if close:
             warnings.warn("close=True isn't supported yet")
         self.renderer.render_board(self.__game.board)
+
+    def action_masks(self) -> np.ndarray:
+        masks = np.zeros((len(self.__match3_actions),))
+        for i in range(len(self.__match3_actions)):
+            first, second = self.__match3_actions[i]
+            try:
+                if self.__game.check_matches(first, second):
+                    masks[i] = True
+            except (OutOfBoardError, ImmovableShapeError):
+                continue
+        return masks
