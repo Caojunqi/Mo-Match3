@@ -4,7 +4,7 @@ import torch as th
 from torch import nn
 import torch.nn.functional as F
 
-from stable_baselines3.common.policies import ActorCriticPolicy
+from stable_baselines3.common.policies import ActorCriticPolicy, BaseFeaturesExtractor
 
 
 class Match3FeaturesExtractor(nn.Module):
@@ -55,7 +55,7 @@ class Match3MlpExtractor(nn.Module):
     def forward_actor(self, features: th.Tensor) -> th.Tensor:
         x_act = th.relu(self.act_conv1(features))
         x_act = x_act.view(-1, self.board_width * self.board_height)
-        x_act = F.log_softmax(self.act_fc1(x_act), dim=0)
+        x_act = F.log_softmax(self.act_fc1(x_act), dim=1)
         return x_act
 
     def forward_critic(self, features: th.Tensor) -> th.Tensor:
@@ -94,3 +94,28 @@ class Match3Policy(ActorCriticPolicy):
         board_width = self.observation_space.shape[1]
         board_height = self.observation_space.shape[2]
         self.mlp_extractor = Match3MlpExtractor(board_width, board_height)
+
+
+class FeatureExtractor(BaseFeaturesExtractor):
+
+    def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 512):
+        super().__init__(observation_space, features_dim)
+        n_input_channels = observation_space.shape[0]
+        self.cnn = nn.Sequential(
+            nn.Conv2d(n_input_channels, 32, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 128, kernel_size=(3, 3), padding=1),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+
+        # Compute shape by doing one forward pass
+        with th.no_grad():
+            n_flatten = self.cnn(th.as_tensor(observation_space.sample()[None]).float()).shape[1]
+
+        self.linear = nn.Sequential(nn.Linear(n_flatten, features_dim), nn.ReLU())
+
+    def forward(self, observations: th.Tensor) -> th.Tensor:
+        return self.linear(self.cnn(observations))
