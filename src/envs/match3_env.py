@@ -41,7 +41,7 @@ class Match3Env(gym.Env):
         self.observation_space = spaces.Box(
             low=0,
             high=self.n_shapes,
-            shape=self.__game.board.board_size,
+            shape=(1, *self.__game.board.board_size),
             dtype=int)
 
         # setting actions space
@@ -105,6 +105,7 @@ class Match3Env(gym.Env):
         return ob, reward, episode_over, {}
 
     def reset(self, *args, **kwargs):
+        np.random.seed(self.random_state)
         board = self.levels.sample()
         self.__game.start(board)
         return self.__get_board()
@@ -117,7 +118,7 @@ class Match3Env(gym.Env):
         return reward
 
     def __get_board(self):
-        return self.__game.board.board.copy()
+        return np.expand_dims(self.__game.board.board.copy(), axis=0)
 
     def render(self, mode='human', close=False):
         if close:
@@ -134,3 +135,6 @@ class Match3Env(gym.Env):
             except (OutOfBoardError, ImmovableShapeError):
                 continue
         return masks
+
+    def get_action(self, ind):
+        return self.__match3_actions[ind]
