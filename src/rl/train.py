@@ -6,7 +6,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-import src.rl.config as config
+from src import definitions
 from src.envs.levels import Level, Match3Levels
 from src.envs.match3_env import Match3Env
 from src.rl.policy import FeatureExtractor
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                         batch_size=512)
     # model = PPO('MlpPolicy', monitor_env, verbose=0, batch_size=512)
 
-    eval_callback = MaskableEvalCallback(eval_env=vec_env, eval_freq=100, best_model_save_path=config.MODEL_DIR)
+    eval_callback = MaskableEvalCallback(eval_env=vec_env, eval_freq=10, best_model_save_path=definitions.MODEL_DIR)
     print("start learn=============")
     model.learn(total_timesteps=10000000, callback=[eval_callback])
     print("end learn=============")
