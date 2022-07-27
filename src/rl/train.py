@@ -1,14 +1,15 @@
-from src.envs.match3_env import Match3Env
-from sb3_contrib.common.maskable.evaluation import evaluate_policy
 from sb3_contrib.common.maskable.callbacks import MaskableEvalCallback
-from stable_baselines3.common.monitor import Monitor
-from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy, MaskableActorCriticCnnPolicy
+from sb3_contrib.common.maskable.evaluation import evaluate_policy
+from sb3_contrib.common.maskable.policies import MaskableActorCriticCnnPolicy
 from sb3_contrib.ppo_mask import MaskablePPO
-import src.rl.config as config
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
-from src.rl.policy import FeatureExtractor
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import SubprocVecEnv
+
+import src.rl.config as config
 from src.envs.levels import Level, Match3Levels
+from src.envs.match3_env import Match3Env
+from src.rl.policy import FeatureExtractor
 
 TRAIN_LEVELS = [
     Level(9, 9, 6, [

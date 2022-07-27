@@ -1,10 +1,10 @@
-from typing import Callable, Dict, List, Optional, Tuple, Type, Union
+from typing import Callable, Dict, List, Optional, Type, Union
+
 import gym
 import torch as th
-from torch import nn
 import torch.nn.functional as F
-
 from stable_baselines3.common.policies import ActorCriticPolicy, BaseFeaturesExtractor
+from torch import nn
 
 
 class Match3FeaturesExtractor(nn.Module):

@@ -1,7 +1,9 @@
-from src.envs.match3_env import Match3Env
-from sb3_contrib.ppo_mask import MaskablePPO
-import src.rl.config as config
 import time
+
+from sb3_contrib.ppo_mask import MaskablePPO
+
+import src.rl.config as config
+from src.envs.match3_env import Match3Env
 
 if __name__ == '__main__':
     loaded_model = MaskablePPO.load(config.MODEL_DIR + "/best_model.zip")
