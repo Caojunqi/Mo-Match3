@@ -1,7 +1,8 @@
 import copy
-from itertools import product
-from functools import wraps
 from abc import ABC, abstractmethod
+from functools import wraps
+from itertools import product
+
 import numpy as np
 
 

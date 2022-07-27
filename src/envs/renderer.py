@@ -1,9 +1,10 @@
-import numpy as np
-from matplotlib import colors
-from src.envs.game import Board
-
 # PyCharm debugger failed with default matplotlib backend
 import matplotlib
+import numpy as np
+from matplotlib import colors
+
+from src.envs.game import Board
+
 matplotlib.use("TkAgg")
 
 import matplotlib.pyplot as plt

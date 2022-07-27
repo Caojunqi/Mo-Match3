@@ -1,6 +1,8 @@
-import numpy as np
-from collections import namedtuple
 import random
+from collections import namedtuple
+
+import numpy as np
+
 from src.envs.game import Board
 
 Level = namedtuple("Level", ["h", "w", "n_shapes", "board"])

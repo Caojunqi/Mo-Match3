@@ -1,15 +1,14 @@
+import warnings
+from itertools import product
+
 import gym
-from gym import error, spaces, utils
-from gym.utils import seeding
+import numpy as np
+from gym import spaces
 
 from src.envs.game import Game, Point
 from src.envs.game import OutOfBoardError, ImmovableShapeError
 from src.envs.levels import LEVELS, Match3Levels
 from src.envs.renderer import Renderer
-
-from itertools import product
-import warnings
-import numpy as np
 
 BOARD_NDIM = 2
 
