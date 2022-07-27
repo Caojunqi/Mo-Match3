@@ -38,10 +38,15 @@ class Match3Env(gym.Env):
         self.renderer = Renderer(self.n_shapes)
 
         # setting observation space
+        # self.observation_space = spaces.Box(
+        #     low=0,
+        #     high=self.n_shapes,
+        #     shape=(1, *self.__game.board.board_size),
+        #     dtype=int)
         self.observation_space = spaces.Box(
             low=0,
             high=self.n_shapes,
-            shape=(1, *self.__game.board.board_size),
+            shape=(self.n_shapes + 1, *self.__game.board.board_size),
             dtype=int)
 
         # setting actions space
@@ -118,7 +123,17 @@ class Match3Env(gym.Env):
         return reward
 
     def __get_board(self):
-        return np.expand_dims(self.__game.board.board.copy(), axis=0)
+        multi_channel_board = np.zeros(shape=(self.n_shapes + 1, *self.__game.board.board_size))
+        original_board = self.__game.board.board
+        for i in range(self.h):
+            for j in range(self.w):
+                tile_type = int(original_board[i][j])
+                if tile_type == -1:
+                    multi_channel_board[-1][i][j] = 1
+                else:
+                    multi_channel_board[tile_type][i][j] = 1
+        return multi_channel_board
+        # return np.expand_dims(self.__game.board.board.copy(), axis=0)
 
     def render(self, mode='human', close=False):
         if close:
