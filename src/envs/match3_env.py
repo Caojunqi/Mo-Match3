@@ -140,15 +140,42 @@ class Match3Env(gym.Env):
         self.renderer.render_board(self.__game.board)
 
     def action_masks(self) -> np.ndarray:
-        masks = np.zeros((len(self.__match3_actions),))
+        # start_time = current_milli_time()
+        # masks = np.zeros((len(self.__match3_actions),))
+        # for i in range(len(self.__match3_actions)):
+        #     first, second = self.__match3_actions[i]
+        #     try:
+        #         if self.__game.check_matches(first, second):
+        #             masks[i] = True
+        #     except (OutOfBoardError, ImmovableShapeError):
+        #         continue
+        # end_time = current_milli_time()
+        # print(" old action masks time cost : {}".format(end_time - start_time))
+        #
+        # start_time = current_milli_time()
+        new_masks = np.zeros((len(self.__match3_actions),))
         for i in range(len(self.__match3_actions)):
             first, second = self.__match3_actions[i]
             try:
-                if self.__game.check_matches(first, second):
-                    masks[i] = True
+                if self.__game.check_matches_new(first, second):
+                    new_masks[i] = True
             except (OutOfBoardError, ImmovableShapeError):
                 continue
-        return masks
+        # end_time = current_milli_time()
+        # print(" new action masks time cost : {}".format(end_time - start_time))
+        #
+        # comparison = masks == new_masks
+        # equal_arrays = comparison.all()
+        # assert equal_arrays, "新算法有问题，两个集合不一样"
+
+        return new_masks
 
     def get_action(self, ind):
         return self.__match3_actions[ind]
+
+
+import time
+
+
+def current_milli_time():
+    return round(time.time() * 1000)

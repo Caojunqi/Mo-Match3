@@ -2,6 +2,7 @@ import copy
 from abc import ABC, abstractmethod
 from functools import wraps
 from itertools import product
+from typing import Set
 
 import numpy as np
 
@@ -405,6 +406,16 @@ class MatchesSearcher(AbstractSearcher):
                 matches.update(to_del)
         return matches
 
+    def scan_points_for_matches(self, board: Board, points: Set[Point]) -> bool:
+        for point in points:
+            try:
+                to_del = self.__get_match3_for_point(board, point)
+                if to_del:
+                    return True
+            except (OutOfBoardError, ImmovableShapeError):
+                continue
+        return False
+
     def __get_match3_for_point(self, board: Board, point: Point):
         shape = board.get_shape(point)
         match3_list = []
@@ -426,6 +437,8 @@ class MatchesSearcher(AbstractSearcher):
                        for new_p in new_points]
             except OutOfBoardError:
                 continue
+            except Exception:
+                print("===============")
             finally:
                 yield []
 
@@ -618,6 +631,18 @@ class Game(AbstractGame):
     def check_matches(self, point1: Point, point2: Point):
         direction = point2 - point1
         return self.__check_matches(point1, direction)
+
+    def check_matches_new(self, point1: Point, point2: Point):
+        direction = point2 - point1
+        tmp_board = self.__get_copy_of_board()
+        tmp_board.move(point1, direction)
+
+        points = {point1, point2}
+        dirs = self.__mtch_searcher.directions
+        points = {p + Point(*i) for p in points for d in dirs for i in d}
+
+        matches = self.__mtch_searcher.scan_points_for_matches(tmp_board, points)
+        return matches
 
     def __get_copy_of_board(self):
         return copy.deepcopy(self.board)
