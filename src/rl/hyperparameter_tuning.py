@@ -1,12 +1,9 @@
-from concurrent.futures.thread import ThreadPoolExecutor
-
 import optuna
 from sb3_contrib.common.maskable.evaluation import evaluate_policy
 from sb3_contrib.common.maskable.policies import MaskableActorCriticCnnPolicy
 from sb3_contrib.ppo_mask import MaskablePPO
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from src.envs.levels import Level, Match3Levels
 from src.envs.match3_env import Match3Env
@@ -53,11 +50,9 @@ def optimize_agent(trial):
         features_extractor_class=FeatureExtractor,
     )
     agent_params = suggest_params(trial)
-    vec_env = make_vec_env(Match3Env, n_envs=10, wrapper_class=Monitor, env_kwargs=env_kwargs,
-                           vec_env_cls=SubprocVecEnv)
+    vec_env = make_vec_env(Match3Env, n_envs=10, wrapper_class=Monitor, env_kwargs=env_kwargs)
 
-    model = MaskablePPO(MaskableActorCriticCnnPolicy, vec_env, policy_kwargs=policy_kwargs, verbose=0,
-                        batch_size=512, **agent_params)
+    model = MaskablePPO(MaskableActorCriticCnnPolicy, vec_env, policy_kwargs=policy_kwargs, verbose=0, **agent_params)
     model.learn(10000)
     mean_reward, std_reward = evaluate_policy(model, vec_env, n_eval_episodes=10)
 
@@ -66,6 +61,7 @@ def optimize_agent(trial):
 
 if __name__ == '__main__':
     study = optuna.create_study(study_name="optimize-ppo-hyperparameter", direction="maximize")
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        for _ in range(5):
-            executor.submit(study.optimize, optimize_agent, 100)
+    study.optimize(optimize_agent, n_trials=100)
+    # with ThreadPoolExecutor(max_workers=5) as executor:
+    #     for _ in range(5):
+    #         executor.submit(study.optimize, optimize_agent, 100)
